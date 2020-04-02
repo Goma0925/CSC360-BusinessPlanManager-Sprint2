@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_181" class="java.beans.XMLDecoder">
+ <object class="businessplan.main.VMOSA" id="VMOSA0">
+  <void class="businessplan.main.BusinessPlan" method="getField">
+   <string>name</string>
+   <void method="set">
+    <object idref="VMOSA0"/>
+    <string>VMOSAtest1</string>
+   </void>
+  </void>
+  <void class="businessplan.main.BusinessPlan" method="getField">
+   <string>description</string>
+   <void method="set">
+    <object idref="VMOSA0"/>
+    <string>This is the VMOSA business Plan</string>
+   </void>
+  </void>
+  <void class="businessplan.main.BusinessPlan" method="getField">
+   <string>year</string>
+   <void method="set">
+    <object idref="VMOSA0"/>
+    <int>2020</int>
+   </void>
+  </void>
+  <void class="businessplan.main.BusinessPlan" method="getField">
+   <string>LeadingPart</string>
+   <void method="set">
+    <object idref="VMOSA0"/>
+    <object class="java.util.ArrayList">
+     <void method="add">
+      <object class="businessplan.main.Vision" id="Vision0">
+       <void class="businessplan.main.Part" method="getField">
+        <string>description</string>
+        <void method="set">
+         <object idref="Vision0"/>
+         <string>This is the vision1 for VMOSA</string>
+        </void>
+       </void>
+      </object>
+     </void>
+     <void method="add">
+      <object class="businessplan.main.Vision" id="Vision1">
+       <void class="businessplan.main.Part" method="getField">
+        <string>description</string>
+        <void method="set">
+         <object idref="Vision1"/>
+         <string>This is the vision2 for VMOSA</string>
+        </void>
+       </void>
+      </object>
+     </void>
+    </object>
+   </void>
+  </void>
+  <void class="businessplan.main.BusinessPlan" method="getField">
+   <string>assessment</string>
+   <void method="set">
+    <object idref="VMOSA0"/>
+    <string>Goal Achieved!</string>
+   </void>
+  </void>
+ </object>
+<void class="businessplan.main.Part" method="getField">
+ <string>description</string>
+ <void method="set">
+  <object class="businessplan.main.Action" id="Action0">
+   <void class="businessplan.main.Part" method="getField">
+    <string>parent</string>
+    <void method="set">
+     <object idref="Action0"/>
+     <object class="businessplan.main.Strategy" id="Strategy0">
+      <void class="businessplan.main.Part" method="getField">
+       <string>description</string>
+       <void method="set">
+        <object idref="Strategy0"/>
+        <string>This is the strategy1 for VMOSA</string>
+       </void>
+      </void>
+      <void class="businessplan.main.Part" method="getField">
+       <string>parent</string>
+       <void method="set">
+        <object idref="Strategy0"/>
+        <object class="businessplan.main.Objective" id="Objective0">
+         <void class="businessplan.main.Part" method="getField">
+          <string>description</string>
+          <void method="set">
+           <object idref="Objective0"/>
+           <string>This is the objective1 for VMOSA</string>
+          </void>
+         </void>
+         <void class="businessplan.main.Part" method="getField">
+          <string>parent</string>
+          <void method="set">
+           <object idref="Objective0"/>
+           <object class="businessplan.main.Mission" id="Mission0">
+            <void class="businessplan.main.Part" method="getField">
+             <string>description</string>
+             <void method="set">
+              <object idref="Mission0"/>
+              <string>This is the mission1 for VMOSA</string>
+             </void>
+            </void>
+            <void class="businessplan.main.Part" method="getField">
+             <string>parent</string>
+             <void method="set">
+              <object idref="Mission0"/>
+              <object idref="Vision0"/>
+             </void>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+      </void>
+     </object>
+    </void>
+   </void>
+  </object>
+  <string>This is the action1 for VMOSA</string>
+ </void>
+</void>
+<void class="businessplan.main.Part" id="Field0" method="getField">
+ <string>children</string>
+ <void id="ArrayList0" method="get">
+  <object idref="Vision0"/>
+  <void method="add">
+   <object idref="Mission0"/>
+  </void>
+ </void>
+</void>
+<void idref="ArrayList0"/>
+<void class="businessplan.main.Part" id="Field1" method="getField">
+ <string>children</string>
+ <void id="ArrayList1" method="get">
+  <object idref="Mission0"/>
+  <void method="add">
+   <object idref="Objective0"/>
+  </void>
+ </void>
+</void>
+<void idref="ArrayList1"/>
+<void class="businessplan.main.Part" id="Field2" method="getField">
+ <string>children</string>
+ <void id="ArrayList2" method="get">
+  <object idref="Strategy0"/>
+  <void method="add">
+   <object idref="Action0"/>
+  </void>
+ </void>
+</void>
+<void idref="ArrayList2"/>
+<void class="businessplan.main.Part" id="Field3" method="getField">
+ <string>children</string>
+ <void id="ArrayList3" method="get">
+  <object idref="Objective0"/>
+  <void method="add">
+   <object idref="Strategy0"/>
+  </void>
+ </void>
+</void>
+<void idref="ArrayList3"/>
+</java>
