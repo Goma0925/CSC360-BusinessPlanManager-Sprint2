@@ -9,8 +9,15 @@ import java.rmi.RemoteException;
 
 import org.junit.jupiter.api.Test;
 
+import businessplan.main.Action;
 import businessplan.main.BusinessPlan;
+import businessplan.main.Goal;
+import businessplan.main.Mission;
+import businessplan.main.Objective;
+import businessplan.main.Part;
+import businessplan.main.Strategy;
 import businessplan.main.VMOSA;
+import businessplan.main.Vision;
 import businessplan.remote.errors.ClientNotLoggedInException;
 import businessplan.remote.errors.DepartmentDoesNotMatchException;
 import businessplan.remote.errors.NotAdminException;
@@ -18,7 +25,7 @@ import businessplan.remote.errors.NotValidUserException;
 import businessplan.remote.errors.PlanDoesNotExistsException;
 import businessplan.remote.errors.PlanNotEditableException;
 
-class BPClientTest
+class BpClientTestOld
 {
 	@Test
 	void test()
@@ -26,7 +33,7 @@ class BPClientTest
 		System.out.println("START: BpClientTest unit test");
 		//To test the network capability, start a server locally.
 		String serverObjBindName = "test-server";
-		String localServerHostname = "127.0.0.1";
+		String localServerHostname = "rmi://127.0.0.1/" + serverObjBindName;
 		String defaultAdminName = "DEFAULT_ADMIN_NAME";
 		String defaultAdminPw = "DEFAULT_ADMIN_PW";
 		//The directory path for the SERVER to store business plans.
@@ -38,7 +45,6 @@ class BPClientTest
 		try{
 			bpServer = new BpServerBYB(defaultAdminName, defaultAdminPw, outputFileDirPath, autoFileSaveInterval);
 		} catch (Exception e) {
-			System.out.print(e.getMessage());
 			fail("BpServerBYB could not initialize.");
 		}
 		//Start running the server online.
@@ -49,34 +55,15 @@ class BPClientTest
 		};
 		
 		//Start client program that connects to the server.
-		BpClient adminClient = null;
-		try{
-			adminClient = new BpClient(localServerHostname, serverObjBindName, serverPortNumber);
-		} catch (Exception e)
-		{
-			System.out.print(e.getMessage());
-			fail("Problem occured while a client connecting to a server.");
-		};
+		BpClient adminClient = new BpClient(localServerHostname, serverObjBindName, serverPortNumber);
 		String invalidUserName = "This user name should not exist";
 		String invalidUserPw = "This pw should not work";
 
 		//Test login
-		boolean adminLoginSuccess = false;
-		try
-		{
-			adminLoginSuccess = adminClient.login(invalidUserName, invalidUserPw);
-		} catch (RemoteException e2)
-		{
-			fail("adminClient.login(invalidUserName, invalidUserPw) raised an exception");
-		}
+		boolean adminLoginSuccess;
+		adminLoginSuccess = adminClient.login(invalidUserName, invalidUserPw);
 		assertEquals(false, adminLoginSuccess);
-		try
-		{
-			adminLoginSuccess = adminClient.login(defaultAdminName, defaultAdminPw);
-		} catch (Exception e)
-		{
-			fail("adminClient.login(invalidUserName, invalidUserPw) raised an exception");
-		}
+		adminLoginSuccess = adminClient.login(defaultAdminName, defaultAdminPw);
 		assertEquals(true, adminLoginSuccess);
 		
 		//Create a new user, using the admin client.
@@ -88,27 +75,16 @@ class BPClientTest
 		try
 		{
 			adminClient.addUser(newUser1);
-		} catch (Exception e)
+		} catch (ClientNotLoggedInException | NotAdminException e1)
 		{
-			System.out.println(e.getMessage());
+			System.out.println(e1.getMessage());
 			fail("An admin client should be able to add a new user without an exception.");
 		}
 		
 		//Test if the user is actually added and if it is accessible
-		BpClient normalClient = null;
-		try{
-			normalClient = new BpClient(localServerHostname, serverObjBindName, serverPortNumber);
-		} catch (Exception e) {
-			fail("BpServerBYB could not initialize.");
-		}
-		boolean userLoginSuccess = false;
-		try
-		{
-			userLoginSuccess = normalClient.login(userName, pw);
-		} catch (Exception e)
-		{
-			fail("normalClient.login did not work");
-		}
+		BpClient normalClient = new BpClient(localServerHostname, serverObjBindName, serverPortNumber);
+		boolean userLoginSuccess;
+		userLoginSuccess = normalClient.login(userName, pw);
 		assertEquals(true, userLoginSuccess);
 		
 		//Check a normal account does not have admin method access.
@@ -133,7 +109,8 @@ class BPClientTest
 		try
 		{
 			bp = normalClient.createNewPlan(VMOSA.class, bpName, year);
-		} catch (Exception e)
+		} catch (InstantiationException | IllegalAccessException | NotValidUserException
+				| ClientNotLoggedInException e)
 		{
 			System.out.println(e.getMessage());
 			fail("A normal client should be able to create a new businessplan.");
@@ -145,7 +122,8 @@ class BPClientTest
 		try
 		{
 			normalClient.savePlan(bp);
-		} catch (Exception e)
+		} catch (NotValidUserException | DepartmentDoesNotMatchException | PlanDoesNotExistsException
+				| PlanNotEditableException | ClientNotLoggedInException e)
 		{
 			System.out.println(e.getMessage());
 			fail("A normal client should be able to save a new businessplan.");
@@ -154,7 +132,7 @@ class BPClientTest
 		try
 		{
 			restoredBp = normalClient.getPlanByYear(bp.getYear());
-		} catch (Exception e)
+		} catch (NotValidUserException | PlanDoesNotExistsException | ClientNotLoggedInException e)
 		{
 			System.out.println(e.getMessage());
 			fail("A normal client should be able to get a businessplan by year.");
@@ -174,7 +152,7 @@ class BPClientTest
 			//Make sure planExists() returns true for the plan that does exist.
 			planExists = normalClient.planExists(year);
 			assertEquals(true, planExists);
-		} catch (Exception e1)
+		} catch (ClientNotLoggedInException e1)
 		{
 			fail("A client is already logged in but an exception is thrown.");
 		};
@@ -182,12 +160,7 @@ class BPClientTest
 		
 		//Test if operations are prohibited before login.
 		
-		BpClient userClient2 = null;
-		try{
-			userClient2 = new BpClient(localServerHostname, serverObjBindName, serverPortNumber);
-		} catch (Exception e) {
-			fail("BpServerBYB could not initialize.");
-		}
+		BpClient userClient2 = new BpClient(localServerHostname, serverObjBindName, serverPortNumber);; //New client
 		try {
 			userClient2.getPlanByYear(year);
 			fail("BpClient.getPlanByYear() should not allow an operation without login.");

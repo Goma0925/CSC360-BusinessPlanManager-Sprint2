@@ -116,7 +116,6 @@ public abstract class BusinessPlan implements Serializable{
 	public void XMLEncode(File outFile) {
 		XMLEncoder encoder=null;
 		String filename = outFile.getAbsolutePath();
-		System.out.println("Line199 BusinessPlan: XMLEncode|outFilePath="+filename);
 		try{
 			encoder=new XMLEncoder(new BufferedOutputStream(new FileOutputStream(filename)));
 			}
@@ -129,7 +128,6 @@ public abstract class BusinessPlan implements Serializable{
 	public static BusinessPlan XMLDecode(File inFile) {
 		XMLDecoder decoder=null;
 		String filename = inFile.getAbsolutePath();
-		System.out.println("Line131 BusinessPlan: XMLDecode|inFilePath="+filename);
 		try {
 			decoder=new XMLDecoder(new BufferedInputStream(new FileInputStream(filename)));
 		} catch (FileNotFoundException e) {

@@ -2,6 +2,8 @@ package businessplan.main;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Test;
 
 import businessplan.main.Action;
@@ -22,15 +24,16 @@ class BPtest
 	void test()
 	{
 		//create & initialize the business plan object 1: VMOSA
-		BusinessPlan VMOSAplan = new VMOSA("test1");
-		VMOSAplan.setName("VMOSAtest1");
+		String department = "CS";
+		BusinessPlan VMOSAplan = new VMOSA("VMOSAtest1", department, 2020);
+		VMOSAplan.setName("VMOSAtest1 revised");
 		VMOSAplan.setDescription("This is the VMOSA business Plan");
 		VMOSAplan.setTimeStamp(00000);
 		VMOSAplan.setYear(2020);
 		VMOSAplan.setAssessment("Goal Achieved!");
 		
 		//create tests for set functions of business plan
-		assertEquals("VMOSAtest1",VMOSAplan.getName());
+		assertEquals("VMOSAtest1 revised",VMOSAplan.getName());
 		assertEquals(00000,VMOSAplan.getTimeStamp());
 		assertEquals(2020,VMOSAplan.getYear());
 		assertEquals("This is the VMOSA business Plan",VMOSAplan.getDescription());
@@ -83,7 +86,7 @@ class BPtest
 		
 		//---------------------------
 		//create & initialize the business plan object 2: VMSGOA
-		BusinessPlan additionalPlan = new VMSGOA("test2");
+		BusinessPlan additionalPlan = new VMSGOA("test2", department, 2019);
 		additionalPlan.setDescription("This is the VMSGOA business Plan");
 		additionalPlan.setTimeStamp(000022);
 		additionalPlan.setAssessment("Goal is not achieved!");
@@ -136,9 +139,9 @@ class BPtest
 		//test XML: store & read back
 		//Since we got the to string function in both BusinessPlan and Part class, 
 		//we can use BusinessPlan.toString() to help us test whether two BusinessPlan is the same.
-		String SERIALIZED_FILE_NAME="BusinessPlan1.xml";
-		VMOSAplan.XMLEncode(SERIALIZED_FILE_NAME);
-		BusinessPlan VMOSAplanDeCode=VMOSAplan.XMLDecode(SERIALIZED_FILE_NAME);
+		File SERIALIZED_FILE = new File(System.getProperty("user.dir") + "/BusinessPlan1.xml");
+		VMOSAplan.XMLEncode(SERIALIZED_FILE);
+		BusinessPlan VMOSAplanDeCode=VMOSAplan.XMLDecode(SERIALIZED_FILE);
 		System.out.println(VMOSAplanDeCode);
 		System.out.println(VMOSAplan);
 		assertEquals(VMOSAplanDeCode.toString(),VMOSAplan.toString());

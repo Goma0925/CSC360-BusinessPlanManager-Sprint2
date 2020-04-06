@@ -1,17 +1,12 @@
 package businessplan.remote;
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.rmi.AlreadyBoundException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
-
 import businessplan.main.BusinessPlan;
-import businessplan.main.VMOSA;
 import businessplan.remote.errors.*;;
 
 public class BpServerBYB extends UnicastRemoteObject implements BpServer{
@@ -21,22 +16,39 @@ public class BpServerBYB extends UnicastRemoteObject implements BpServer{
 	private Hashtable<String, User> userInfo = new Hashtable<String, User>();//{user_id:user}
 	//The hashtable below is to store business plans
 	private Hashtable<String, Hashtable<Integer, BusinessPlan>> planTableByDepartment = new Hashtable<String, Hashtable<Integer, BusinessPlan>>();
+	private int intervalForAutoBackup;
 	
-	public static void main(String args[]) throws RemoteException, PlanDoesNotExistsException {
-		//To start from the command line/by main(), 
-		// pass a output directory for the first parameter (index 0)
-		// pass a serverBindName for the second parameter.
-		Path businessPlanFileDir = Paths.get(args[0]);
-		String serverBindName = args[1];
-		System.out.println("Output file directory set to:" + businessPlanFileDir);
-		BpServerBYB server = new BpServerBYB("admin", "byb", Paths.get(args[0]));
-		server.startServer(serverBindName);
-	}
-	
-	public BpServerBYB(String defaultAdminName, String defaultAdminPw, Path businessPlanFileDir) throws RemoteException, PlanDoesNotExistsException {
+	public BpServerBYB(String defaultAdminName, String defaultAdminPw, Path businessPlanFileDir, int intervalForAutoBackup) throws RemoteException, PlanDoesNotExistsException {
 		this.businessPlanFileDir = businessPlanFileDir;
 		User admin = new User(defaultAdminName, defaultAdminPw, "ADMIN", true);
 		this.userInfo.put(defaultAdminName, admin);
+		this.intervalForAutoBackup = intervalForAutoBackup;
+	};
+	
+	public void startServer(String serverBindName, int port) throws RemoteException
+	{
+		//String serverBindName: 
+		//	A string for a client to reference the server object. For example
+		//  serverBindName="TestServer" will run a server on
+		//  rmi://127.0.0.1/TestServer.
+		//int port: The port number where the server runs.
+		// 	For example, port=9000 will run the server at
+		//  rmi://127.0.0.1/TestServer:9000
+		//These information above is needed for a client to find this server.
+		System.out.println("Server starting...");
+		try {
+			BpServerBYB server = this;
+			//Create a RMI registry on the server at the specified port number.
+			//This registry accepts the requests from the client.
+			Registry registry = LocateRegistry.createRegistry(port);
+			//Assign a name for a client to reference the remote object.
+			registry.rebind(serverBindName, server);
+			this.isRunning = true;
+            System.out.println("Server ready");
+        } catch (Exception e) {
+            System.err.println("Server exception: " + e.toString());
+            e.printStackTrace();
+        }
 	};
 	
 	protected void loadDataFromDisk() throws PlanDoesNotExistsException
@@ -73,32 +85,31 @@ public class BpServerBYB extends UnicastRemoteObject implements BpServer{
 		});
 	};
 	
+	protected void startAutoBackUp() {
+		Runnable runnable = () -> {
+			//Keep running the auto backup until the server instance is deleted.
+			while (this!=null) {
+				System.out.println("Routine auto save activated...");
+				 this.saveDataOnDisk();
+				System.out.println("All business plans saved in "+this.businessPlanFileDir.toString());
+				try
+				{
+					Thread.sleep(this.intervalForAutoBackup);
+				} catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			};
+		Thread thread = new Thread(runnable);
+		thread.start();
+	}
+	
 	public boolean isRunning()
 	{
 		//This method returns if the server is running and available online.
 		return this.isRunning;
 	}
-
-	public void startServer(String serverBindName) throws RemoteException
-	{
-		System.out.println("Server started.");
-		try {
-			BpServerBYB server = this;
-			//ConcreteRemoteObject stub = (ConcreteRemoteObject) UnicastRemoteObject.exportObject(remoteObj, 0);
-			Naming.rebind(serverBindName, server);  
-			int port = 9000;
-			//Create a RMI registry on the server at the specified port number.
-			//This registry accepts the requests from the client.
-			Registry registry = LocateRegistry.createRegistry(port);
-			//Assign a name for a client to reference the remote object.
-			registry.rebind(serverBindName, server);
-			this.isRunning = true;
-            System.out.println("Server ready");
-        } catch (Exception e) {
-            System.err.println("Server exception: " + e.toString());
-            e.printStackTrace();
-        }
-	};
 
 	public boolean isValidAuth(String userName, String pw)
 	{

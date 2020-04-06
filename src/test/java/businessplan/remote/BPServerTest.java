@@ -4,16 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.rmi.Naming;
-import java.rmi.RemoteException;
-
 import org.junit.jupiter.api.Test;
 import businessplan.main.*;
-import businessplan.remote.errors.DepartmentDoesNotMatchException;
-import businessplan.remote.errors.NotAdminException;
-import businessplan.remote.errors.NotValidUserException;
-import businessplan.remote.errors.PlanDoesNotExistsException;
-import businessplan.remote.errors.PlanNotEditableException;
+import businessplan.remote.errors.*;
 
 class BPServerTest
 {
@@ -23,14 +16,18 @@ class BPServerTest
 	{
 		System.out.println("START: BPServer unit test");
 		System.out.println("NOTE: This script requires Java 1.8 compliance.");
+		System.out.println("NOTE: BpServerBYB class is built into BpClient class. You are not expected to directly use BpServerBYB, but via BpClient.\n");
 		String defaultAdminName = "DefaultAdminName";
 		String defaultAdminPw = "defaultAdminPw";
-		//You can specify the path to store the file by Path class, which saves your from dealing with unknown string errors.
+		//Set the interval to pass to BpServerBYB. The server automatically saves business plans
+		// in files for every specified interval.
+		int intervalForAutoBackup = 5000;//Milliseconds 5000 = 5 seconds.
+		//You can specify the path to store the file by Path class, which saves your from dealing with unknown string errors if you use a pure string to specify a path.
 		Path outputFileDirPath = Paths.get(System.getProperty("user.dir") + "/businessplan-storage/");
 		BpServerBYB server = null;
 		try
 		{
-			server = new BpServerBYB(defaultAdminName, defaultAdminPw, outputFileDirPath);
+			server = new BpServerBYB(defaultAdminName, defaultAdminPw, outputFileDirPath, intervalForAutoBackup);
 		} catch (Exception e){fail("BpServerBYB gave an exception:"+e.getMessage());};
 		
 		String invalidAdminName = "This user name should not exist";
@@ -48,7 +45,7 @@ class BPServerTest
 		adminLoginSuccess = server.isValidAuth(validAdminName, validAdminPw);
 		assertEquals(true, adminLoginSuccess);
 		
-		//Create a new user, using the admin client.
+		//Create a new user, using the admin account.
 		String userName = "This is a new user's name";
 		String pw = "This is a new user's pw";
 		boolean isAdmin = false;
@@ -273,7 +270,7 @@ class BPServerTest
 		try
 		{	
 			//Create a new server instance
-			server2 = new BpServerBYB(defaultAdminName, defaultAdminPw, outputFileDirPath);
+			server2 = new BpServerBYB(defaultAdminName, defaultAdminPw, outputFileDirPath, intervalForAutoBackup);
 		} catch (Exception e1){}
 		
 		//Create the same user that created the csc2019Plan.
@@ -294,11 +291,15 @@ class BPServerTest
 			fail(e.getMessage()+":server2.getPlanByYear() should be able to retrieve the CSC2019Plan.");
 		};
 		assertEquals(csc2019Plan.toString(), restoredCSC2019Plan.toString());
-
-
 		
 		//fail("implement routine saving and loading of business plans");
 		System.out.println("SUCCESS: All test passed in BPServerTest");
+		
+		//Test autoback up. This will start a thread that routinely saves business plans.
+		server2.startAutoBackUp();
+		//Take a look at the printed output to see the routine backup
+		//This routine 
+		while (true) {}//While loop to keep the process alive.
 	};
 	
 
