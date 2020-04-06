@@ -9,10 +9,13 @@ package businessplan.main;
  *
  */
 public class VMOSA extends BusinessPlan {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public VMOSA(){}
-	public VMOSA(String name) {
-		super(name);
-		// TODO Auto-generated constructor stub
+	public VMOSA(String name, String department, int year)  {
+		super(name, department, year) ;
 	}
 	public void addLeadingPart(Part part1) {
 		if (part1.typeName=="vision") {

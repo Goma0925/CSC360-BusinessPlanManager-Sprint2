@@ -1,9 +1,13 @@
 package businessplan.main;
 public class Centre extends BusinessPlan
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public Centre(){}
-	public Centre(String name) {
-		super(name);
+	public Centre(String name, String department, int year) {
+		super(name, department, year);
 	}
 	public void addLeadingPart(Part part1) {
 		if (part1.typeName=="goal") {

@@ -2,9 +2,13 @@ package businessplan.main;
 
 public class VMSGOA extends BusinessPlan
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public VMSGOA(){}
-	public VMSGOA(String name) {
-		super(name);
+	public VMSGOA(String name, String department, int year)  {
+		super(name, department, year) ;
 	}
 	public void addLeadingPart(Part part1) {
 		if (part1.typeName=="vision") {
