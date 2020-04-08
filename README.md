@@ -11,8 +11,8 @@
     - Each method takes the user's name and password in addition to the parameters needed for the operation so that it can check if the user has valid identity information before the user runs a method.
     - Each method raises a corresponding error if there is an exceptional case in order to tell the application user what is wrong with the input parameters. For example, isValidAuth() method raises a NotValidUserException if the user does not exists on the server.
     - The list below is administrator methods that are only allowed to execute if the given user has the isAdmin=true.
-
-    [Administrator methods](https://www.notion.so/ba7a6776cdea40bb9bb39df8ae99fca7)
+    
+![Sprint%202%20Implementation%20Description/UMI.png](Sprint%202%20Implementation%20Description/admin-methods.png)
 
 - **BpClient class**
     - This class is merely a capsule for BpServer. It has coressponding functions to the ones in BpServerBYB. The purpose of this class is to be used by a user of this application to retrieve, post, and edit business plan data on the server.
