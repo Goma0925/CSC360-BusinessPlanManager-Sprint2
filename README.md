@@ -12,7 +12,7 @@
     - Each method raises a corresponding error if there is an exceptional case in order to tell the application user what is wrong with the input parameters. For example, isValidAuth() method raises a NotValidUserException if the user does not exists on the server.
     - The list below is administrator methods that are only allowed to execute if the given user has the isAdmin=true.
     
-![Sprint%202%20Implementation%20Description/UMI.png](Sprint%202%20Implementation%20Description/admin-methods.png)
+![Sprint%202%20Implementation%20Description/admin-methods.png](Sprint%202%20Implementation%20Description/admin-methods.png)
 
 - **BpClient class**
     - This class is merely a capsule for BpServer. It has coressponding functions to the ones in BpServerBYB. The purpose of this class is to be used by a user of this application to retrieve, post, and edit business plan data on the server.
